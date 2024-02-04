@@ -1,10 +1,12 @@
 import base64
 import json
 import logging
+import os
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 from cryptography.fernet import Fernet
+from dotenv import load_dotenv
 from github import Github, InputFileContent
 from requests.exceptions import ReadTimeout
 
@@ -21,31 +23,45 @@ class GistManager(object):
 
     def __init__(
         self,
-        github_token: str,
         gist_hash: str,
-        filename: Union[str, Path],
-        encryption_key: str = '',
+        filename: str,
+        github_gist_token: Optional[str] = None,
+        encryption_key: Optional[str] = None,
     ):
         """
-        Initializes the GistManager with a specific GitHub gist and filename.
+        Initializes GistManager with a specific GitHub gist and filename.
 
         This manager handles operations on a single file within a specified
-        GitHub gist, such as fetching and updating its content. It requires a
-        GitHub token for authentication, the hash of the gist, and the name (or
-        path) of the file within the gist.
+        GitHub gist, such as fetching and updating its content. It requires
+        a GitHub token for authentication, the hash of the gist, and the
+        name (or path) of the file within the gist.
 
-        :param str github_token: The GitHub token used for authentication.
+        :param str github_gist_token: The GitHub token used for
+            authentication. If not provided, it will attempt to retrieve
+            the token from the
+            environment variable GITHUB_GIST_TOKEN.
         :param str gist_hash: The hash identifier of the GitHub gist.
-        :param Union[str, Path] filename: The name or path of the file within
-            the gist to manage.
+        :param filename: The name file within the gist to manage.
+        :param str encryption_key: The encryption key used for encrypting
+            and decrypting the content. If not provided, encryption will be
+            disabled.
         """
-        self.gist_handle = Github(github_token).get_gist(gist_hash)
+        if github_gist_token is None:
+            github_gist_token = os.getenv('GITHUB_GIST_TOKEN')
+        if github_gist_token is None:
+            raise ValueError((
+                'GitHub token is required, provide it as an argument ' +
+                'or in .env file'
+            ))
+        self.gist_handle = Github(github_gist_token).get_gist(gist_hash)
         self.filename = str(filename)
         self.encryption_key = encryption_key
-        if encryption_key:
-            self.fernet = Fernet(base64.urlsafe_b64encode(
-                encryption_key.encode(),
-            ))
+        if encryption_key is None:
+            load_dotenv()  # This loads the .env file
+            self.encryption_key = os.getenv('GIST_ENCRYPT_SECRET_KEY')
+        if self.encryption_key:
+            self.fernet = Fernet(self.encryption_key)
+            logging.info('Encryption enabled')
 
     def encrypt(self, data: str) -> str:
         """
