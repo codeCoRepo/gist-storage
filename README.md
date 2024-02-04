@@ -26,13 +26,29 @@ poetry add gist-storage[encryption]
 
 ## Usage
 
-`your-github-token`: *avatar* > *settings* > *developper settings* (bottom) > *Personal access tokens* > [tick Gist]  
-`your-gist-hash`: *avater* > Gist > [create Gist] > copy from url:
-<https://gist.github.com/psychonaute/5df4f367d185e866235dc6e012761c3f>  
+### `GITHUB_GIST_TOKEN` environement variable
+
+It needs to hold your githun token, to get the token:  
+*your avatar* > *settings* > *developper settings* (bottom) > *Personal access tokens* > [tick Gist]  
+The key starts with `ghp_...`
+
+### load into env var
+
+you can:
+
+- load the env var from *keepass*, using triggers
+- hard code the key in `.env` file
+
+```env
+GITHUB_GIST_TOKEN=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
+```
+
+`your-gist-hash`: *avatar* > Gist > [create Gist] > copy from gist url ie:
+<https://gist.github.com/username/P809QZO0ZWgS8CzQmeyC4AOqwukolr1h>  
 `your-filename`: create a new file > copy the name `info.json`
 
 ```python
-manager = GistManager('your-github-token', 'your-gist-hash', 'your-filename.json')
+manager = GistManager('your-gist-hash', 'your-filename.json')
 
 my_data = {
     "ip": "192.168.4.104"
@@ -56,23 +72,22 @@ print(manager.fetch_json())
 
 ### Use Encryption
 
-Needs `GIST_ENCRYPT_SECRET_KEY` env variable to hold the key
+Encryption activates when `GIST_ENCRYPT_SECRET_KEY` is present in env variables.
 
-you can load the env var from *keepass*, using triggers or if the repo using this utility is private you can hard code the key in `.env` file
+It Needs hold a 32 chars long string  
+
+You can generate one and add it into your `.env` file like so:  
 
 ```python
 import base64
-import os
+from dotenv import set_key
 
 # Generate the key
 key = base64.urlsafe_b64encode(os.urandom(32)).decode()
 
 # Save the key to .env file
-with open(".env", "w") as file:
-    file.write(f"GIST_ENCRYPT_SECRET_KEY={key}\n")
+set_key('.env', 'GIST_ENCRYPT_SECRET_KEY', key)
 ```
-
-With the `.env` file inplace the `GIST_ENCRYPT_SECRET_KEY` env var will be define and encryption active.
 
 ## License
 
