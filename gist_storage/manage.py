@@ -83,24 +83,57 @@ class GistManager(object):
         """
         return self.fernet.decrypt(data.encode()).decode()
 
+    def fetch_content(self) -> str:
+        """
+        Retrieves the content of the file from the gist.
+
+        :return: The content of the file.
+        :rtype: str
+        :raises KeyError: If the specified file is not found in the gist.
+        """
+        logging.info('Retrieving content from gist')
+        try:
+            file_content = self.gist_handle.files[self.filename].content
+            if self.encryption_key:
+                file_content = self.decrypt(file_content)
+            return file_content
+        except KeyError as e:
+            logging.warning(f'File not found in gist: {e}')
+            raise
+
+    def push_content(self, content: str) -> bool:
+        """
+        Updates the specified file within the GitHub gist with new content.
+
+        :param str content: The content to be written to the file.
+        :return: True if the update is successful, False otherwise.
+        :rtype: bool
+        :raises ReadTimeout: If a timeout occurs while trying to update the
+            gist.
+        """
+        try:
+            if self.encryption_key:
+                content = self.encrypt(content)
+            self.gist_handle.edit(files={self.filename: InputFileContent(
+                content=content,
+            )})
+            return True
+        except ReadTimeout as e:
+            logging.warning(f"Couldn't update status: {e}")
+            return False
+
     def fetch_json(self) -> Dict[str, str]:
         """
         Retrieves the content of the json file returns it as a dictionary.
 
         :return: A dictionary containing the data from the file.
         :rtype: Dict[str, str]
-        :raises KeyError: If the specified file is not found in the gist.
         :raises json.JSONDecodeError: If the file content is not valid JSON.
         """
         logging.info('Retrieving data from gist')
         try:
-            file_content = self.gist_handle.files[self.filename].content
-            if self.encryption_key:
-                file_content = self.decrypt(file_content)
+            file_content = self.fetch_content()
             return json.loads(file_content)
-        except KeyError as e:
-            logging.warning(f'File not found in gist: {e}')
-            raise
         except json.JSONDecodeError as e:
             logging.warning(f'Error decoding JSON from file: {e}')
             raise
@@ -116,15 +149,9 @@ class GistManager(object):
         :raises ReadTimeout: If a timeout occurs while trying to update the
             gist.
         """
-        logging.info('Updating last seen alive')
         try:
-            if self.encryption_key:
-                data_public = self.encrypt(json.dumps(data))
-            else:
-                data_public = json.dumps(data, indent=4)
-            self.gist_handle.edit(files={self.filename: InputFileContent(
-                content=data_public,
-            )})
+            file_content = json.dumps(data, indent=4)
+            self.push_content(file_content)
             return True
         except ReadTimeout as e:
             logging.warning(f"Couldn't update status: {e}")
