@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, Optional, Union
 
 from cryptography.fernet import Fernet
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from github import Github, InputFileContent
 from requests.exceptions import ReadTimeout
 
@@ -46,6 +46,7 @@ class GistManager(object):
             and decrypting the content. If not provided, encryption will be
             disabled.
         """
+        load_dotenv(find_dotenv())
         if github_gist_token is None:
             github_gist_token = os.getenv('GITHUB_GIST_TOKEN')
         if github_gist_token is None:
@@ -57,7 +58,6 @@ class GistManager(object):
         self.filename = str(filename)
         self.encryption_key = encryption_key
         if encryption_key is None:
-            load_dotenv()  # This loads the .env file
             self.encryption_key = os.getenv('GIST_ENCRYPT_SECRET_KEY')
         if self.encryption_key:
             self.fernet = Fernet(self.encryption_key)
