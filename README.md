@@ -48,6 +48,12 @@ GITHUB_GIST_TOKEN=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
 `your-filename`: create a new file > copy the name `info.json`
 
 ```python
+from dotenv import load_dotenv, find_dotenv
+from gist_storage.manage import GistManager
+
+
+load_dotenv(find_dotenv())
+
 manager = GistManager('your-gist-hash', 'your-filename.json')
 
 my_data = {
