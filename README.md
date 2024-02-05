@@ -15,13 +15,13 @@ A versatile tool designed to store and share data via gists, ideal for synchroni
 ## Installation
 
 ```bash
-poetry add git+https://git@github.com:psychonaute/gist-storage.git
+poetry add git+https://github.com/codeCoRepo/gist-storage.git#master
 ```
 
 if you need encryption
 
 ```bash
-poetry add git+https://git@github.com:psychonaute/gist-storage.git -E encryption
+poetry add git+https://github.com/codeCoRepo/gist-storage.git#master -E encryption
 ```
 
 ## Usage
