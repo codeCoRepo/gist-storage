@@ -2,13 +2,14 @@ import base64
 import json
 import logging
 import os
-from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Dict, Optional
 
 from cryptography.fernet import Fernet
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 from github import Github, InputFileContent
 from requests.exceptions import ReadTimeout
+
+FERNET_KEY_LENGTH = 32
 
 
 class GistManager(object):
@@ -60,8 +61,36 @@ class GistManager(object):
         if encryption_key is None:
             self.encryption_key = os.getenv('GIST_ENCRYPT_SECRET_KEY')
         if self.encryption_key:
-            self.fernet = Fernet(self.encryption_key)
+            self.fernet = self.load_encryption_key()
             logging.info('Encryption enabled')
+
+    def load_encryption_key(self) -> Fernet:
+        """
+        Load the encryption key from environment variables and return a Fernet.
+
+        Returns:
+            Fernet: A Fernet instance initialized with the encryption key.
+
+        Raises:
+            ValueError: If the encryption key is not found or has an invalid
+            format.
+        """
+        key = os.getenv('GIST_ENCRYPT_SECRET_KEY')
+        if key:
+            try:
+                # Decode the key and check its length
+                decoded_key = base64.urlsafe_b64decode(key)
+            except (ValueError) as e:
+                raise ValueError('Invalid encryption key format') from e
+            if len(decoded_key) == FERNET_KEY_LENGTH:
+                return Fernet(key)
+            raise ValueError(
+                'Encryption key must be 32 bytes long after base64 decoding.',
+            )
+
+        else:
+            raise ValueError('No encryption key found in environment variables')
+
 
     def encrypt(self, data: str) -> str:
         """
