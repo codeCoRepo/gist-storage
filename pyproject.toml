@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "gist-storage"
 description = "A versatile tool designed to store and share data via gists, ideal for synchronizing information across devices. Since gists are publicly available, it includes an option for encryption to ensure security."
-version = "0.3.0"
+version = "0.3.1"
 license = "MIT"
 
 authors = []

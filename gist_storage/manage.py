@@ -58,22 +58,27 @@ class GistManager(object):
         self.gist_handle = Github(github_gist_token).get_gist(gist_hash)
         self.filename = str(filename)
         self.encryption_key = encryption_key
-        if encryption_key is None:
-            self.encryption_key = os.getenv('GIST_ENCRYPT_SECRET_KEY')
-        if self.encryption_key:
-            self.fernet = self.load_encryption_key()
+        self.fernet: Optional[Fernet] = None
+        if self.load_encryption_key():
             logging.info('Encryption enabled')
 
-    def load_encryption_key(self) -> Fernet:
+    def load_encryption_key(self) -> bool:
         """
-        Load the encryption key from environment variables and return a Fernet.
+        Load the encryption key if corresponding environment variables exists
+
+        It initialize the Fernet object, used for symmetric encryption.
 
         Returns:
-            Fernet: A Fernet instance initialized with the encryption key.
+            bool: True if the encryption key is successfully loaded and
+            initialized.
 
         Raises:
-            ValueError: If the encryption key is not found or has an invalid
+            ValueError: If the encryption key is not found in the environment
+            variables.
+            ValueError: If the encryption key is not in the correct
             format.
+            ValueError: If the encryption key length is not 32 bytes
+            after base64 decoding.
         """
         key = os.getenv('GIST_ENCRYPT_SECRET_KEY')
         if key:
@@ -83,14 +88,12 @@ class GistManager(object):
             except (ValueError) as e:
                 raise ValueError('Invalid encryption key format') from e
             if len(decoded_key) == FERNET_KEY_LENGTH:
-                return Fernet(key)
+                self.fernet = Fernet(decoded_key)
+                return True
             raise ValueError(
                 'Encryption key must be 32 bytes long after base64 decoding.',
             )
-
-        else:
-            raise ValueError('No encryption key found in environment variables')
-
+        raise ValueError('No encryption key found in environment variables')
 
     def encrypt(self, data: str) -> str:
         """
