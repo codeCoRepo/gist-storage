@@ -82,18 +82,13 @@ class GistManager(object):
         """
         key = os.getenv('GIST_ENCRYPT_SECRET_KEY')
         if key:
-            try:
-                # Decode the key and check its length
-                decoded_key = base64.urlsafe_b64decode(key)
-            except (ValueError) as e:
-                raise ValueError('Invalid encryption key format') from e
-            if len(decoded_key) == FERNET_KEY_LENGTH:
-                self.fernet = Fernet(decoded_key)
+            if len(key) == FERNET_KEY_LENGTH:
+                self.fernet = Fernet(key)
                 return True
             raise ValueError(
-                'Encryption key must be 32 bytes long after base64 decoding.',
+                'Encryption key must be 32 bytes long.',
             )
-        raise ValueError('No encryption key found in environment variables')
+        return False
 
     def encrypt(self, data: str) -> str:
         """
