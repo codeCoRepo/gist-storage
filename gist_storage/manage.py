@@ -9,8 +9,6 @@ from dotenv import find_dotenv, load_dotenv
 from github import Github, InputFileContent
 from requests.exceptions import ReadTimeout
 
-FERNET_KEY_LENGTH = 32
-
 
 class GistManager(object):
     """
@@ -82,11 +80,17 @@ class GistManager(object):
         """
         key = os.getenv('GIST_ENCRYPT_SECRET_KEY')
         if key:
-            if len(key) == FERNET_KEY_LENGTH:
+            try:
+                # Decode the key and check its length
+                decoded_key = base64.urlsafe_b64decode(key)
+            except (ValueError) as e:
+                raise ValueError('Invalid encryption key format') from e
+            fernet_key_length = 32
+            if len(decoded_key) == fernet_key_length:
                 self.fernet = Fernet(key)
                 return True
             raise ValueError(
-                'Encryption key must be 32 bytes long.',
+                'Encryption key must be 32 bytes long after base64 decoding.',
             )
         return False
 
