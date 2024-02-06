@@ -5,7 +5,6 @@ import os
 from typing import Dict, Optional
 
 from cryptography.fernet import Fernet
-from dotenv import find_dotenv, load_dotenv
 from github import Github, InputFileContent
 from requests.exceptions import ReadTimeout
 
@@ -45,7 +44,6 @@ class GistManager(object):
             and decrypting the content. If not provided, encryption will be
             disabled.
         """
-        load_dotenv(find_dotenv())
         if github_gist_token is None:
             github_gist_token = os.getenv('GITHUB_GIST_TOKEN')
         if github_gist_token is None:
