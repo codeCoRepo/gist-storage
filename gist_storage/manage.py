@@ -25,7 +25,7 @@ class GistManager(object):
         filename: str,
         github_gist_token: Optional[str] = None,
         encryption_key: Optional[str] = None,
-    ):
+    ) -> None:
         """
         Initializes GistManager with a specific GitHub gist and filename.
 
