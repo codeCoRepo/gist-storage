@@ -100,6 +100,8 @@ class GistManager(object):
         :return: Encrypted data.
         :rtype: str
         """
+        if self.fernet is None:
+            raise ValueError('Encryption key is not provided')
         return self.fernet.encrypt(data.encode()).decode()
 
     def decrypt(self, data: str) -> str:
@@ -110,6 +112,8 @@ class GistManager(object):
         :return: Decrypted data.
         :rtype: str
         """
+        if self.fernet is None:
+            raise ValueError('Encryption key is not provided')
         return self.fernet.decrypt(data.encode()).decode()
 
     def fetch_content(self) -> str:
@@ -123,7 +127,7 @@ class GistManager(object):
         logging.info('Retrieving content from gist')
         try:
             file_content = self.gist_handle.files[self.filename].content
-            if self.encryption_key:
+            if self.fernet:
                 file_content = self.decrypt(file_content)
             return file_content
         except KeyError as e:
@@ -141,7 +145,7 @@ class GistManager(object):
             gist.
         """
         try:
-            if self.encryption_key:
+            if self.fernet:
                 content = self.encrypt(content)
             self.gist_handle.edit(files={self.filename: InputFileContent(
                 content=content,
