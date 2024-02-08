@@ -25,6 +25,7 @@ class GistManager(object):
         filename: str,
         github_gist_token: Optional[str] = None,
         encryption_key: Optional[str] = None,
+        disable_encryption: Optional[bool] = False,
     ) -> None:
         """
         Initializes GistManager with a specific GitHub gist and filename.
@@ -51,6 +52,7 @@ class GistManager(object):
                 'GitHub token is required, provide it as an argument ' +
                 'or in .env file'
             ))
+        self.disable_encryption = disable_encryption
         self.gist_handle = Github(github_gist_token).get_gist(gist_hash)
         self.filename = str(filename)
         self.encryption_key = encryption_key
@@ -77,7 +79,7 @@ class GistManager(object):
             after base64 decoding.
         """
         key = os.getenv('GIST_ENCRYPT_SECRET_KEY')
-        if key:
+        if key and not self.disable_encryption:
             try:
                 # Decode the key and check its length
                 decoded_key = base64.urlsafe_b64decode(key)

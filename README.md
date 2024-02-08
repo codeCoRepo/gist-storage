@@ -95,6 +95,12 @@ key = base64.urlsafe_b64encode(os.urandom(32)).decode()
 set_key('.env', 'GIST_ENCRYPT_SECRET_KEY', key)
 ```
 
+If you use multiple GistManager instance and you want to disable encryption for some you can do so.
+
+```python
+manager = GistManager('your-gist-hash', 'your-filename.json', disable_encryption=True)
+```
+
 ## License
 
 [MIT](https://github.com/psychonaute/gist-storage/blob/master/LICENSE)
