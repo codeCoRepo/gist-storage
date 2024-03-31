@@ -40,7 +40,7 @@ you can:
 - hard code the key in `.env` file
 
 ```env
-GITHUB_GIST_TOKEN=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
+GITHUB_GIST_TOKEN=ghp_Ff19Ff19Ff19Ff19Ff19Ff19Ff19Ff19Ff19
 ```
 
 `your-gist-hash`: *avatar* > Gist > [create Gist] > copy from gist url ie:
