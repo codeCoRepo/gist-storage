@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 pygithub = "^2.1.1"
 cryptography = { version = "^42.0.2", optional = true }
 
