@@ -1,7 +1,7 @@
 # gist-storage
 
-[![Build Status](https://github.com/psychonaute/gist-storage/workflows/test/badge.svg?branch=master&event=push)](https://github.com/psychonaute/gist-storage/actions?query=workflow%3Atest)
-[![codecov](https://codecov.io/gh/psychonaute/gist-storage/branch/master/graph/badge.svg)](https://codecov.io/gh/psychonaute/gist-storage)
+[![Build Status](https://github.com/codekoriko/gist-storage/workflows/test/badge.svg?branch=master&event=push)](https://github.com/codekoriko/gist-storage/actions?query=workflow%3Atest)
+[![codecov](https://codecov.io/gh/codekoriko/gist-storage/branch/master/graph/badge.svg)](https://codecov.io/gh/codekoriko/gist-storage)
 [![Python Version](https://img.shields.io/pypi/pyversions/gist-storage.svg)](https://pypi.org/project/gist-storage/)
 [![wemake-python-styleguide](https://img.shields.io/badge/style-wemake-000000.svg)](https://github.com/wemake-services/wemake-python-styleguide)
 
@@ -103,7 +103,7 @@ manager = GistManager('your-gist-hash', 'your-filename.json', disable_encryption
 
 ## License
 
-[MIT](https://github.com/psychonaute/gist-storage/blob/master/LICENSE)
+[MIT](https://github.com/codekoriko/gist-storage/blob/master/LICENSE)
 
 ## Credits
 
