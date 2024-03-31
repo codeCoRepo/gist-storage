@@ -2,7 +2,7 @@ import base64
 import json
 import logging
 import os
-from typing import Dict, Optional
+from typing import Dict, Optional, Type
 
 from cryptography.fernet import Fernet
 from github import Github, InputFileContent
@@ -157,7 +157,10 @@ class GistManager(object):
             logging.warning(f"Couldn't update status: {e}")
             return False
 
-    def fetch_json(self) -> Dict[str, str]:
+    def fetch_json(
+        self,
+        decoder: Optional[Type[json.JSONDecoder]] = None,
+    ) -> Dict[str, str]:
         """
         Retrieves the content of the json file returns it as a dictionary.
 
@@ -168,12 +171,16 @@ class GistManager(object):
         logging.info('Retrieving data from gist')
         try:
             file_content = self.fetch_content()
-            return json.loads(file_content)
+            return json.loads(file_content, cls=decoder)
         except json.JSONDecodeError as e:
             logging.warning(f'Error decoding JSON from file: {e}')
             raise
 
-    def push_json(self, data: Dict[str, str]) -> bool:
+    def push_json(
+        self,
+        data: Dict[str, str],
+        encoder: Optional[Type[json.JSONEncoder]] = None,
+    ) -> bool:
         """
         Updates the specified file within the GitHub gist with new data.
 
@@ -185,7 +192,7 @@ class GistManager(object):
             gist.
         """
         try:
-            file_content = json.dumps(data, indent=4)
+            file_content = json.dumps(data, indent=4, cls=encoder)
             self.push_content(file_content)
             return True
         except ReadTimeout as e:
