@@ -202,7 +202,8 @@ class GistManager(object):
     def update_json(self, update_data: Dict[str, str]) -> bool:
         """
         Updates the JSON data in the specified file of the GitHub gist with
-        provided entries.
+        provided entries. If not present in the exisiting dict new keys are
+        created.
 
         :param Dict update_data: A dictionary containing the data to be updated
             in the file.
