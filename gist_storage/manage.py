@@ -126,7 +126,7 @@ class GistManager(object):
         :rtype: str
         :raises KeyError: If the specified file is not found in the gist.
         """
-        logging.info('Retrieving content from gist')
+        logging.info(f'Retrieving content from gist: {self.gist_handle.id}')
         try:
             file_content = self.gist_handle.files[self.filename].content
             if self.fernet:
@@ -146,6 +146,7 @@ class GistManager(object):
         :raises ReadTimeout: If a timeout occurs while trying to update the
             gist.
         """
+        logging.info(f'Pushing content to gist: {self.gist_handle.id}')
         try:
             if self.fernet:
                 content = self.encrypt(content)
@@ -168,7 +169,6 @@ class GistManager(object):
         :rtype: Dict[str, str]
         :raises json.JSONDecodeError: If the file content is not valid JSON.
         """
-        logging.info('Retrieving data from gist')
         try:
             file_content = self.fetch_content()
             return json.loads(file_content, cls=decoder)
