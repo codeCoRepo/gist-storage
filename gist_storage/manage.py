@@ -136,6 +136,25 @@ class GistManager(object):
             logging.warning(f'File not found in gist: {e}')
             raise
 
+    def pop_content(self) -> str:
+        """
+        Retrieves the content of the file then erase the content from the gist.
+
+        :return: The content of the file.
+        :rtype: str
+        :raises KeyError: If the specified file is not found in the gist.
+        """
+        logging.info(f'Retrieving content from gist: {self.gist_handle.id}')
+        try:
+            file_content = self.gist_handle.files[self.filename].content
+            if self._fernet:
+                file_content = self.decrypt(file_content)
+        except KeyError as e:
+            logging.warning(f'File not found in gist: {e}')
+            raise
+        self.push_content('')
+        return file_content
+
     def push_content(self, content: str) -> bool:
         """
         Updates the specified file within the GitHub gist with new content.
