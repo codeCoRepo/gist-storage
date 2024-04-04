@@ -198,27 +198,29 @@ class GistManager(object):
     def push_json(
         self,
         data: Dict[str, str],
-        encoder: Optional[Type[json.JSONEncoder]] = None,
+        **kwargs,
     ) -> bool:
         """
         Updates the specified file within the GitHub gist with new data.
 
         :param Dict data: A dictionary containing the data to be written to the
             file.
+        :param kwargs: Additional keyword arguments to be passed to the
+            json.dumps
         :return: True if the update is successful, False otherwise.
         :rtype: bool
         :raises ReadTimeout: If a timeout occurs while trying to update the
             gist.
         """
         try:
-            file_content = json.dumps(data, indent=4, cls=encoder)
+            file_content = json.dumps(data, indent=4, **kwargs)
             self.push_content(file_content)
             return True
         except ReadTimeout as e:
             logging.warning(f"Couldn't update status: {e}")
             return False
 
-    def update_json(self, update_data: Dict[str, str]) -> bool:
+    def update_json(self, update_data: Dict[str, str], **kwargs) -> bool:
         """
         Updates the JSON data in the specified file of the GitHub gist with
         provided entries. If not present in the exisiting dict new keys are
@@ -226,6 +228,8 @@ class GistManager(object):
 
         :param Dict update_data: A dictionary containing the data to be updated
             in the file.
+        :param kwargs: Additional keyword arguments to be passed to the
+            json.dumps
         :return: True if the update is successful, False otherwise.
         :rtype: bool
         :raises Exception: If fetching or pushing data fails.
@@ -240,7 +244,7 @@ class GistManager(object):
                 return True
 
             existing_data.update(update_data)
-            return self.push_json(existing_data)
+            return self.push_json(existing_data, **kwargs)
         except Exception as e:
             logging.warning(f'Error updating JSON data: {e}')
             return False
