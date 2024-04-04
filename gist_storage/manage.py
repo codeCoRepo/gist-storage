@@ -56,7 +56,7 @@ class GistManager(object):
         self.gist_handle = Github(github_gist_token).get_gist(gist_hash)
         self.filename = str(filename)
         self.encryption_key = encryption_key
-        self.fernet: Optional[Fernet] = None
+        self._fernet: Optional[Fernet] = None
         if self.load_encryption_key():
             logging.info('Encryption enabled')
 
@@ -87,7 +87,7 @@ class GistManager(object):
                 raise ValueError('Invalid encryption key format') from e
             fernet_key_length = 32
             if len(decoded_key) == fernet_key_length:
-                self.fernet = Fernet(key)
+                self._fernet = Fernet(key)
                 return True
             raise ValueError(
                 'Encryption key must be 32 bytes long after base64 decoding.',
@@ -102,9 +102,9 @@ class GistManager(object):
         :return: Encrypted data.
         :rtype: str
         """
-        if self.fernet is None:
+        if self._fernet is None:
             raise ValueError('Encryption key is not provided')
-        return self.fernet.encrypt(data.encode()).decode()
+        return self._fernet.encrypt(data.encode()).decode()
 
     def decrypt(self, data: str) -> str:
         """
@@ -114,9 +114,9 @@ class GistManager(object):
         :return: Decrypted data.
         :rtype: str
         """
-        if self.fernet is None:
+        if self._fernet is None:
             raise ValueError('Encryption key is not provided')
-        return self.fernet.decrypt(data.encode()).decode()
+        return self._fernet.decrypt(data.encode()).decode()
 
     def fetch_content(self) -> str:
         """
@@ -129,7 +129,7 @@ class GistManager(object):
         logging.info(f'Retrieving content from gist: {self.gist_handle.id}')
         try:
             file_content = self.gist_handle.files[self.filename].content
-            if self.fernet:
+            if self._fernet:
                 file_content = self.decrypt(file_content)
             return file_content
         except KeyError as e:
@@ -148,7 +148,7 @@ class GistManager(object):
         """
         logging.info(f'Pushing content to gist: {self.gist_handle.id}')
         try:
-            if self.fernet:
+            if self._fernet:
                 content = self.encrypt(content)
             self.gist_handle.edit(files={self.filename: InputFileContent(
                 content=content,
