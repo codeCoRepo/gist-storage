@@ -2,7 +2,7 @@ import base64
 import json
 import logging
 import os
-from typing import Dict, Optional, List, Union
+from typing import Dict, Optional, Union, List, Any
 
 from cryptography.fernet import Fernet
 from github import Github, InputFileContent
@@ -195,9 +195,9 @@ class GistManager(object):
             logging.warning(f'Error decoding JSON from file: {e}')
             raise
 
-    def push_json(
+    def push_json(  # type: ignore
         self,
-        data: Union[List[object], Dict[object, object]],
+        data: Union[List[Any], Dict[Any, Any]],
         **kwargs,
     ) -> bool:
         """
@@ -220,9 +220,9 @@ class GistManager(object):
             logging.warning(f"Couldn't update status: {e}")
             return False
 
-    def update_json(
+    def update_json(  # type: ignore
         self,
-        update_data: Union[List[object], Dict[object, object]],
+        update_data: Union[List[Any], Dict[Any, Any]],
         **kwargs,
     ) -> bool:
         """
