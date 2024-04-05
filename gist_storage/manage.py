@@ -2,11 +2,22 @@ import base64
 import json
 import logging
 import os
-from typing import Dict, Optional, Union, List, Any
+from typing import Dict, Optional, Union, List, Any, TypeAlias
 
 from cryptography.fernet import Fernet
 from github import Github, InputFileContent
 from requests.exceptions import ReadTimeout
+
+
+JsonableType: TypeAlias = Union[
+    Dict[str, 'JsonableType'],
+    List['JsonableType'],
+    str,
+    int,
+    float,
+    bool,
+    None,
+]
 
 
 class GistManager(object):
