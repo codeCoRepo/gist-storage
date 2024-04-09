@@ -142,6 +142,7 @@ class GistManager(object):
             file_content = self.gist_handle.files[self.filename].content
             if self._fernet:
                 file_content = self.decrypt(file_content)
+            logging.debug(f'Content: {file_content}')
             return file_content
         except KeyError as e:
             logging.warning(f'File not found in gist: {e}')
@@ -155,14 +156,8 @@ class GistManager(object):
         :rtype: str
         :raises KeyError: If the specified file is not found in the gist.
         """
-        logging.info(f'Retrieving content from gist: {self.gist_handle.id}')
-        try:
-            file_content = self.gist_handle.files[self.filename].content
-            if self._fernet:
-                file_content = self.decrypt(file_content)
-        except KeyError as e:
-            logging.warning(f'File not found in gist: {e}')
-            raise
+        logging.info(f'Popping content from gist: {self.gist_handle.id}')
+        file_content = self.fetch_content()
         self.push_content('')
         return file_content
 
@@ -177,6 +172,7 @@ class GistManager(object):
             gist.
         """
         logging.info(f'Pushing content to gist: {self.gist_handle.id}')
+        logging.debug(f'Content: {content}')
         try:
             if self._fernet:
                 content = self.encrypt(content)
