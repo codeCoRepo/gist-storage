@@ -139,6 +139,7 @@ class GistManager(object):
         """
         logging.info(f'Retrieving content from gist: {self.gist_handle.id}')
         try:
+            self.gist_handle.update()
             file_content = self.gist_handle.files[self.filename].content
             if self._fernet:
                 file_content = self.decrypt(file_content)
