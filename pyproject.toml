@@ -23,6 +23,7 @@ classifiers = [
 python = "^3.9"
 pygithub = {git = "https://github.com/PyGithub/PyGithub.git", rev = "main"}
 cryptography = { version = "^42.0.2", optional = true }
+python-dotenv = "^1.0.1"
 
 [tool.poetry.extras]
 encryption = ["cryptography"]

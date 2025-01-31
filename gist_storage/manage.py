@@ -2,12 +2,11 @@ import base64
 import json
 import logging
 import os
-from typing import Dict, Optional, Union, List, Any, TypeAlias
+from typing import Any, Dict, List, Optional, TypeAlias, Union
 
 from cryptography.fernet import Fernet
 from github import Github, InputFileContent
 from requests.exceptions import ReadTimeout
-
 
 JsonableType: TypeAlias = Union[
     Dict[str, 'JsonableType'],
