@@ -28,7 +28,7 @@ poetry add git+https://github.com/codeCoRepo/gist-storage.git#master -E encrypti
 
 ### `GITHUB_GIST_TOKEN` environement variable
 
-It needs to hold your githun token, to get the token:  
+It needs to hold your github token, to get the token:  
 *your avatar* > *settings* > *developper settings* (bottom) > *Personal access tokens* > [tick Gist]  
 The key starts with `ghp_...`
 
@@ -45,7 +45,7 @@ GITHUB_GIST_TOKEN=ghp_Ff19Ff19Ff19Ff19Ff19Ff19Ff19Ff19Ff19
 
 `your-gist-hash`: *avatar* > Gist > [create Gist] > copy from gist url ie:
 <https://gist.github.com/username/P809QZO0ZWgS8CzQmeyC4AOqwukolr1h>  
-`your-filename`: create a new file > copy the name `info.json`
+`your-filename`: create a new file > copy the name `your-filename.json`
 
 ```python
 from dotenv import load_dotenv, find_dotenv
